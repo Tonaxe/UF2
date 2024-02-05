@@ -21,6 +21,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.uf2redsocial.databinding.ActivityMainBinding;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -65,15 +67,23 @@ public class MainActivity extends AppCompatActivity {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
 
                 if(user != null){
-                    Glide.with(MainActivity.this)
-                            .load(FirebaseAuth.getInstance().getCurrentUser().getPhotoUrl().toString())
-                            .circleCrop()
-                            .into(imageView);
-                    name.setText(FirebaseAuth.getInstance().getCurrentUser().getDisplayName());
+                    if (user.getPhotoUrl() != null) {
+                        Glide.with(MainActivity.this)
+                                .load(FirebaseAuth.getInstance().getCurrentUser().getPhotoUrl().toString())
+                                .circleCrop()
+                                .into(imageView);
+                    }
+                    if (user.getDisplayName() != null) {
+                        name.setText(FirebaseAuth.getInstance().getCurrentUser().getDisplayName());
+                    }
                     email.setText(FirebaseAuth.getInstance().getCurrentUser().getEmail());
                 }
             }
         });
+
+        FirebaseFirestore.getInstance().setFirestoreSettings(new FirebaseFirestoreSettings.Builder()
+                .setPersistenceEnabled(false)
+                .build());
     }
 
     @Override
