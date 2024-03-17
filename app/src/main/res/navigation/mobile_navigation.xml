@@ -30,7 +30,11 @@
         android:id="@+id/homeFragment"
         android:name="com.example.uf2redsocial.HomeFragment"
         android:label="fragment_home"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/action_homeFragment_to_comentariosFragment"
+            app:destination="@id/comentariosFragment" />
+    </fragment>
     <fragment
         android:id="@+id/newPostFragment"
         android:name="com.example.uf2redsocial.NewPostFragment"

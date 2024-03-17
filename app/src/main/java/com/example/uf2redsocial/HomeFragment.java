@@ -78,6 +78,20 @@ public class HomeFragment extends Fragment {
 
         @Override
         protected void onBindViewHolder(@NonNull PostViewHolder holder, int position, @NonNull final Post post) {
+
+            // Configurar el clic del botón para navegar al fragmento ComentariosFragment
+            holder.comentarios.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // Crear un Bundle para pasar los datos del post al fragmento ComentariosFragment
+                    Bundle bundle = new Bundle();
+                    bundle.putParcelable("post", post);
+
+                    // Navegar al fragmento ComentariosFragment con los datos del post como argumentos
+                    Navigation.findNavController(v).navigate(R.id.action_homeFragment_to_comentariosFragment, bundle);
+                }
+            });
+
             if (post.authorPhotoUrl == null) {
                 holder.authorPhotoImageView.setImageResource(R.drawable.user);
             } else {
@@ -166,6 +180,8 @@ public class HomeFragment extends Fragment {
             ImageView authorPhotoImageView, likeImageView, mediaImageView, deletePostButton;
             TextView authorTextView, contentTextView, numLikesTextView;
 
+            ImageView comentarios;
+
             PostViewHolder(@NonNull View itemView) {
                 super(itemView);
 
@@ -176,6 +192,7 @@ public class HomeFragment extends Fragment {
                 numLikesTextView = itemView.findViewById(R.id.numLikesTextView);
                 mediaImageView = itemView.findViewById(R.id.mediaImage);
                 deletePostButton = itemView.findViewById(R.id.papelera);
+                comentarios = itemView.findViewById(R.id.comentarios);
             }
         }
     }
