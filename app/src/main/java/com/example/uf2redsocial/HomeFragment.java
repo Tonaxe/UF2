@@ -122,16 +122,17 @@ public class HomeFragment extends Fragment {
             if (post.author.equals(currentUserId)) {
                 holder.deletePostButton.setVisibility(View.VISIBLE);
             } else {
-                holder.deletePostButton.setVisibility(View.GONE);
+                holder.deletePostButton.setVisibility(View.VISIBLE);
             }
 
             // Asignar el clic del botón de eliminar
             holder.deletePostButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (post.author.equals(currentUserId)) {
+                    String postId = getSnapshots().getSnapshot(position).getId(); // Obtener el ID del post
+                    if (post.uid.equals(currentUserId)) {
                         // Si el usuario actual es el autor de la publicación, procede con la eliminación
-                        eliminarPost(post.uid);
+                        eliminarPost(postId);
                     } else {
                         // Si el usuario actual no es el autor de la publicación, muestra un mensaje o realiza alguna acción apropiada
                         Toast.makeText(getContext(), "No tiene permiso para eliminar esta publicación", Toast.LENGTH_SHORT).show();
