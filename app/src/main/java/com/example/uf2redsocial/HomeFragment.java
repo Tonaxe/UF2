@@ -15,10 +15,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -28,11 +31,9 @@ public class HomeFragment extends Fragment {
     NavController navController;
     public AppViewModel appViewModel;
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
         return inflater.inflate(R.layout.fragment_home, container, false);
     }
 
@@ -65,7 +66,9 @@ public class HomeFragment extends Fragment {
     }
 
     class PostsAdapter extends FirestoreRecyclerAdapter<Post, PostsAdapter.PostViewHolder> {
-        public PostsAdapter(@NonNull FirestoreRecyclerOptions<Post> options) {super(options);}
+        public PostsAdapter(@NonNull FirestoreRecyclerOptions<Post> options) {
+            super(options);
+        }
 
         @NonNull
         @Override
@@ -75,10 +78,9 @@ public class HomeFragment extends Fragment {
 
         @Override
         protected void onBindViewHolder(@NonNull PostViewHolder holder, int position, @NonNull final Post post) {
-            if(post.authorPhotoUrl == null) {
+            if (post.authorPhotoUrl == null) {
                 holder.authorPhotoImageView.setImageResource(R.drawable.user);
-            }
-            else {
+            } else {
                 Glide.with(getContext()).load(post.authorPhotoUrl).circleCrop().into(holder.authorPhotoImageView);
             }
             holder.authorTextView.setText(post.author);
@@ -87,7 +89,7 @@ public class HomeFragment extends Fragment {
             // Gestion de likes
             final String postKey = getSnapshots().getSnapshot(position).getId();
             final String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-            if(post.likes.containsKey(uid))
+            if (post.likes.containsKey(uid))
                 holder.likeImageView.setImageResource(R.drawable.like_on);
             else
                 holder.likeImageView.setImageResource(R.drawable.like_off);
@@ -95,7 +97,7 @@ public class HomeFragment extends Fragment {
             holder.likeImageView.setOnClickListener(view -> {
                 FirebaseFirestore.getInstance().collection("posts")
                         .document(postKey)
-                        .update("likes."+uid, post.likes.containsKey(uid) ?
+                        .update("likes." + uid, post.likes.containsKey(uid) ?
                                 FieldValue.delete() : true);
             });
 
@@ -114,10 +116,53 @@ public class HomeFragment extends Fragment {
             } else {
                 holder.mediaImageView.setVisibility(View.GONE);
             }
+
+            // Verificar si el usuario actual es el autor de la publicación
+            String currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+            if (post.author.equals(currentUserId)) {
+                holder.deletePostButton.setVisibility(View.VISIBLE);
+            } else {
+                holder.deletePostButton.setVisibility(View.GONE);
+            }
+
+            // Asignar el clic del botón de eliminar
+            holder.deletePostButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (post.author.equals(currentUserId)) {
+                        // Si el usuario actual es el autor de la publicación, procede con la eliminación
+                        eliminarPost(post.uid);
+                    } else {
+                        // Si el usuario actual no es el autor de la publicación, muestra un mensaje o realiza alguna acción apropiada
+                        Toast.makeText(getContext(), "No tiene permiso para eliminar esta publicación", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+        }
+
+        private void eliminarPost(String postId) {
+            // Aquí debes implementar la lógica para eliminar el post con el postId proporcionado
+            // Por ejemplo, puedes utilizar FirebaseFirestore para eliminar el documento del post de la base de datos
+            FirebaseFirestore.getInstance().collection("posts").document(postId)
+                    .delete()
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            // El post se eliminó con éxito
+                            Toast.makeText(getContext(), "Post eliminado con éxito", Toast.LENGTH_SHORT).show();
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            // Hubo un error al intentar eliminar el post
+                            Toast.makeText(getContext(), "Error al eliminar el post: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
         }
 
         class PostViewHolder extends RecyclerView.ViewHolder {
-            ImageView authorPhotoImageView, likeImageView, mediaImageView;
+            ImageView authorPhotoImageView, likeImageView, mediaImageView, deletePostButton;
             TextView authorTextView, contentTextView, numLikesTextView;
 
             PostViewHolder(@NonNull View itemView) {
@@ -129,6 +174,7 @@ public class HomeFragment extends Fragment {
                 likeImageView = itemView.findViewById(R.id.likeImageView);
                 numLikesTextView = itemView.findViewById(R.id.numLikesTextView);
                 mediaImageView = itemView.findViewById(R.id.mediaImage);
+                deletePostButton = itemView.findViewById(R.id.papelera);
             }
         }
     }
