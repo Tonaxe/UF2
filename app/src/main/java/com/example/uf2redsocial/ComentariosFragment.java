@@ -121,7 +121,7 @@ public class ComentariosFragment extends Fragment {
         if (!comentario.isEmpty()) {
             if (currentUser != null) {
                 // Crear un nuevo objeto Comentario con el nombre de usuario y la imagen del usuario actual
-                Comentario nuevoComentario = new Comentario(currentUser.getDisplayName(), comentario, Objects.requireNonNull(currentUser.getPhotoUrl()).toString());
+                Comentario nuevoComentario = new Comentario(currentUser.getProviderId(), currentUser.getDisplayName(), comentario, Objects.requireNonNull(currentUser.getPhotoUrl()).toString());
 
                 // Guardar el comentario en Firestore
                 guardarComentarioEnFirestore(post.uid, nuevoComentario);
