@@ -17,6 +17,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +30,7 @@ public class ComentariosFragment extends Fragment {
     private RecyclerView commentsRecyclerView;
     private ComentariosAdapter comentariosAdapter;
 
+    private FirebaseUser currentUser; // Usuario actualmente conectado
     private Post post; // El post seleccionado
     private View rootView; // Variable para almacenar la vista raíz del fragmento
 
@@ -41,6 +44,9 @@ public class ComentariosFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        // Obtener el usuario actualmente conectado
+        currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
         // Inicializar vistas
         commentEditText = rootView.findViewById(R.id.commentEditText);
@@ -96,15 +102,14 @@ public class ComentariosFragment extends Fragment {
         }
     }
 
-
     private void enviarComentario() {
         // Obtener el texto del comentario
         String comentario = commentEditText.getText().toString().trim();
 
         if (!comentario.isEmpty()) {
-            if (post.getAuthor() != null && post.getAuthorPhotoUrl() != null) {
-                // Crear un nuevo objeto Comentario con el nombre de usuario y la imagen del usuario
-                Comentario nuevoComentario = new Comentario(post.author, comentario, post.authorPhotoUrl);
+            if (currentUser != null) {
+                // Crear un nuevo objeto Comentario con el nombre de usuario y la imagen del usuario actual
+                Comentario nuevoComentario = new Comentario(currentUser.getDisplayName(), comentario, currentUser.getPhotoUrl().toString());
 
                 // Agregar el nuevo comentario a la lista de comentarios del adaptador
                 comentariosAdapter.agregarComentario(nuevoComentario);
@@ -118,7 +123,6 @@ public class ComentariosFragment extends Fragment {
             Toast.makeText(getContext(), "El comentario está vacío", Toast.LENGTH_SHORT).show();
         }
     }
-
 
     private void cargarComentarios() {
         // Aquí debes cargar los comentarios del post desde la base de datos o cualquier otra fuente de datos
