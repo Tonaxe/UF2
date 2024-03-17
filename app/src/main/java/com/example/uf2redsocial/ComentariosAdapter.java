@@ -3,10 +3,15 @@ package com.example.uf2redsocial;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.bumptech.glide.Glide;
+import com.example.uf2redsocial.Comentario;
+import com.example.uf2redsocial.R;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,10 +30,9 @@ public class ComentariosAdapter extends RecyclerView.Adapter<ComentariosAdapter.
         notifyDataSetChanged(); // Notificar al adaptador que los datos han cambiado
     }
 
-    // Método para agregar un comentario a la lista
     public void agregarComentario(Comentario comentario) {
         listaComentarios.add(comentario);
-        notifyItemInserted(listaComentarios.size() - 1); // Notificar al adaptador que se ha insertado un nuevo elemento
+        notifyDataSetChanged(); // Notificar al adaptador que se agregó un nuevo comentario
     }
 
     @NonNull
@@ -54,18 +58,31 @@ public class ComentariosAdapter extends RecyclerView.Adapter<ComentariosAdapter.
 
         private TextView nombreUsuarioTextView;
         private TextView contenidoComentarioTextView;
+        private ImageView authorPhotoImageView;
 
         ComentarioViewHolder(@NonNull View itemView) {
             super(itemView);
 
             nombreUsuarioTextView = itemView.findViewById(R.id.nombreUsuarioTextView);
             contenidoComentarioTextView = itemView.findViewById(R.id.contenidoComentarioTextView);
+            authorPhotoImageView = itemView.findViewById(R.id.authorPhotoImageView);
         }
 
         void bind(Comentario comentario) {
             // Establecer los datos del comentario en las vistas correspondientes
             nombreUsuarioTextView.setText(comentario.getNombreUsuario());
             contenidoComentarioTextView.setText(comentario.getContenido());
+
+            // Cargar la imagen del usuario en el ImageView
+            String urlFotoUsuario = comentario.getFotoUsuarioUrl();
+            if (urlFotoUsuario != null && !urlFotoUsuario.isEmpty()) {
+                Glide.with(itemView.getContext())
+                        .load(urlFotoUsuario)
+                        .into(authorPhotoImageView);
+            } else {
+                // Si no hay URL de foto de usuario válida, puedes establecer una imagen de perfil predeterminada
+                authorPhotoImageView.setImageResource(R.drawable.user);
+            }
         }
     }
 }

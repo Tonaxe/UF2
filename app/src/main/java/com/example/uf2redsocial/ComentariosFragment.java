@@ -104,7 +104,7 @@ public class ComentariosFragment extends Fragment {
         if (!comentario.isEmpty()) {
             if (post.getAuthor() != null && post.getAuthorPhotoUrl() != null) {
                 // Crear un nuevo objeto Comentario con el nombre de usuario y la imagen del usuario
-                Comentario nuevoComentario = new Comentario(post.getAuthor(), comentario);
+                Comentario nuevoComentario = new Comentario(post.author, comentario, post.authorPhotoUrl);
 
                 // Agregar el nuevo comentario a la lista de comentarios del adaptador
                 comentariosAdapter.agregarComentario(nuevoComentario);
