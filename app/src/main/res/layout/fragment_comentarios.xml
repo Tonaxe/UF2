@@ -12,7 +12,7 @@
         android:padding="10dp">
         <ImageView
             android:id="@+id/authorPhotoImageView"
-            android:layout_width="wrap_content"
+            android:layout_width="60dp"
             android:layout_height="60dp"
             android:adjustViewBounds="true"
             app:srcCompat="@drawable/user" />

@@ -17,8 +17,15 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -131,4 +138,56 @@ public class ComentariosFragment extends Fragment {
         List<Comentario> listaComentarios = new ArrayList<>(); // Debes cargar los comentarios aquí
         comentariosAdapter.setComentarios(listaComentarios);
     }
+
+    // Guardar un comentario en Firestore
+    private void guardarComentarioEnFirestore(String postId, Comentario comentario) {
+        // Obtener una referencia a la colección "comentarios"
+        CollectionReference comentariosRef = FirebaseFirestore.getInstance().collection("comentarios");
+
+        // Crear un nuevo documento para el comentario con un ID único
+        comentariosRef.document()
+                .set(comentario)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        // El comentario se guardó exitosamente en Firestore
+                        Toast.makeText(getContext(), "Comentario guardado exitosamente", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        // Error al guardar el comentario en Firestore
+                        Toast.makeText(getContext(), "Error al guardar el comentario: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    // Recuperar comentarios de Firestore para un post específico
+    private void cargarComentariosDeFirestore(String postId) {
+        // Obtener una referencia a la colección "comentarios" y realizar una consulta para obtener los comentarios del post
+        CollectionReference comentariosRef = FirebaseFirestore.getInstance().collection("comentarios");
+        Query query = comentariosRef.whereEqualTo("postId", postId);
+
+        query.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                // Procesar los resultados de la consulta y mostrar los comentarios en tu aplicación
+                List<Comentario> comentarios = new ArrayList<>();
+                for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                    Comentario comentario = documentSnapshot.toObject(Comentario.class);
+                    comentarios.add(comentario);
+                }
+                // Actualizar tu RecyclerView o cualquier otra vista con los comentarios obtenidos
+                comentariosAdapter.setComentarios(comentarios);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                // Error al recuperar los comentarios de Firestore
+                Toast.makeText(getContext(), "Error al cargar los comentarios: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
 }
