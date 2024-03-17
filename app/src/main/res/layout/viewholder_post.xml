@@ -63,6 +63,14 @@
                     android:layout_gravity="center_vertical"
                     android:text="200K"/>
                 <ImageView
+                    android:id="@+id/comentarios"
+                    app:srcCompat="@drawable/comentarios"
+                    android:adjustViewBounds="true"
+                    android:layout_marginStart="20dp"
+                    android:layout_width="20dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"/>
+                <ImageView
                     android:id="@+id/papelera"
                     app:srcCompat="@drawable/delete"
                     android:adjustViewBounds="true"

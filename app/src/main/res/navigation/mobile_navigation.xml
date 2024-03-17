@@ -41,4 +41,9 @@
         android:name="com.example.uf2redsocial.MediaFragment"
         android:label="fragment_media"
         tools:layout="@layout/fragment_media" />
+    <fragment
+        android:id="@+id/comentariosFragment"
+        android:name="com.example.uf2redsocial.ComentariosFragment"
+        android:label="fragment_comentarios"
+        tools:layout="@layout/fragment_comentarios" />
 </navigation>

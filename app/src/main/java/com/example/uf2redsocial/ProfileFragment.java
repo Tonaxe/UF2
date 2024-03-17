@@ -33,7 +33,6 @@ public class ProfileFragment extends Fragment {
     TextView displayNameTextView, emailTextView;
     EditText nuevoNombreEditText;
     Button saveChangesButton;
-
     ImageButton changePhotoButton;
     ActivityResultLauncher<Intent> galleryLauncher;
 
