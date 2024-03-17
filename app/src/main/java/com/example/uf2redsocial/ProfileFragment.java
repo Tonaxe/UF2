@@ -36,7 +36,8 @@ public class ProfileFragment extends Fragment {
     ImageButton changePhotoButton;
     ActivityResultLauncher<Intent> galleryLauncher;
 
-    public ProfileFragment() {}
+    public ProfileFragment() {
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -56,7 +57,7 @@ public class ProfileFragment extends Fragment {
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
-        if(user != null){
+        if (user != null) {
             displayNameTextView.setText(user.getDisplayName());
             emailTextView.setText(user.getEmail());
 
@@ -118,6 +119,12 @@ public class ProfileFragment extends Fragment {
                         if (task.isSuccessful()) {
                             displayNameTextView.setText(nuevoNombre);
                             Toast.makeText(getContext(), "Nombre actualizado correctamente", Toast.LENGTH_SHORT).show();
+
+                            // Actualizar el nombre en Firebase Auth
+                            FirebaseUser updatedUser = FirebaseAuth.getInstance().getCurrentUser();
+                            if (updatedUser != null) {
+                                displayNameTextView.setText(updatedUser.getDisplayName());
+                            }
                         } else {
                             Toast.makeText(getContext(), "Error al actualizar el nombre", Toast.LENGTH_SHORT).show();
                         }
