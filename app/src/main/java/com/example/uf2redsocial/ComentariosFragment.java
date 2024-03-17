@@ -22,6 +22,7 @@ import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class ComentariosFragment extends Fragment {
 
@@ -109,7 +110,7 @@ public class ComentariosFragment extends Fragment {
         if (!comentario.isEmpty()) {
             if (currentUser != null) {
                 // Crear un nuevo objeto Comentario con el nombre de usuario y la imagen del usuario actual
-                Comentario nuevoComentario = new Comentario(currentUser.getDisplayName(), comentario, currentUser.getPhotoUrl().toString());
+                Comentario nuevoComentario = new Comentario(currentUser.getDisplayName(), comentario, Objects.requireNonNull(currentUser.getPhotoUrl()).toString());
 
                 // Agregar el nuevo comentario a la lista de comentarios del adaptador
                 comentariosAdapter.agregarComentario(nuevoComentario);
